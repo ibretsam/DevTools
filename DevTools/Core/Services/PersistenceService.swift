@@ -22,8 +22,18 @@ final class PersistenceService {
         let container = NSPersistentContainer(name: "DevTools")
         container.loadPersistentStores { _, error in
             if let error = error as NSError? {
-                // In production, handle this error appropriately
-                fatalError("Core Data error: \(error), \(error.userInfo)")
+                // Log the error for debugging
+                print("⚠️ Core Data error: \(error.localizedDescription)")
+                print("Error details: \(error.userInfo)")
+                
+                // In production, we could:
+                // 1. Show user-friendly error message
+                // 2. Attempt to recover by deleting and recreating the store
+                // 3. Fall back to in-memory store
+                // 4. Disable persistence features gracefully
+                
+                // For now, we'll continue with a potentially corrupted store
+                // rather than crashing the entire app
             }
         }
         return container
