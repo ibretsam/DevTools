@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+// Legacy ContentView - replaced by RootNavigationView
+// Keeping for reference during development
 struct ContentView: View {
     var body: some View {
         VStack {
