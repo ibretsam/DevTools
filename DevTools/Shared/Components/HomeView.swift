@@ -20,11 +20,6 @@ struct HomeView: View {
         GeometryReader { geometry in
             ScrollView {
                 VStack(alignment: .leading, spacing: 32) {
-                    // Hero Header Section
-                    heroHeaderSection
-                    
-                    // Quick Stats Section
-                    quickStatsSection
                     
                     // Tools grid by category
                     ForEach(ToolCategory.allCases, id: \.self) { category in
@@ -51,52 +46,6 @@ struct HomeView: View {
                 endPoint: .bottomTrailing
             )
         )
-    }
-    
-    // MARK: - Hero Header Section
-    private var heroHeaderSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            HStack {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Developer Tools")
-                        .font(.system(size: 36, weight: .bold, design: .default))
-                        .foregroundColor(.primary)
-                    
-                    Text("Professional utilities for modern development workflows")
-                        .font(.system(size: 16, weight: .medium))
-                        .foregroundColor(.secondary)
-                        .lineLimit(2)
-                }
-                
-                Spacer()
-                
-                // Decorative element
-                Image(systemName: "hammer.fill")
-                    .font(.system(size: 48, weight: .light))
-                    .foregroundColor(.accentColor.opacity(0.3))
-                    .rotationEffect(.degrees(15))
-            }
-            
-            // Feature highlights
-            HStack(spacing: 24) {
-                featureHighlight(icon: "bolt.fill", text: "Lightning Fast")
-                featureHighlight(icon: "shield.fill", text: "Privacy First")
-                featureHighlight(icon: "paintbrush.fill", text: "Native Design")
-            }
-        }
-        .padding(.vertical, 8)
-    }
-    
-    // MARK: - Quick Stats Section
-    private var quickStatsSection: some View {
-        HStack(spacing: 20) {
-            statCard(title: "\(ToolRegistry.allTools.count)", subtitle: "Developer Tools", icon: "wrench.and.screwdriver")
-            statCard(title: "\(ToolCategory.allCases.count)", subtitle: "Categories", icon: "folder.fill")
-            statCard(title: "100%", subtitle: "Privacy Focused", icon: "lock.shield")
-            
-            Spacer()
-        }
-        .padding(.vertical, 8)
     }
     
     // MARK: - Category Section
