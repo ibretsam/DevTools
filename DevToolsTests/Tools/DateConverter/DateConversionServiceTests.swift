@@ -88,7 +88,7 @@ final class DateConversionServiceTests: XCTestCase {
         let input = "1693488600" // Sep 6, 2023 3:30 PM UTC
         
         // When
-        let result = service.convert(input: input, type: .timestamp)
+        let result = service.convert(input: input, type: .epoch)
         
         // Then
         XCTAssertTrue(result.success)
