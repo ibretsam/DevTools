@@ -75,9 +75,11 @@ final class DateConversionServiceTests: XCTestCase {
         
         // Then
         XCTAssertTrue(result.success)
-        let epochTime = Int(result.result)
-        XCTAssertNotNil(epochTime)
-        XCTAssertGreaterThan(epochTime!, 1693000000) // Should be around 2023
+        guard let epochTime = Int(result.result) else {
+            XCTFail("Failed to convert result to epoch time")
+            return
+        }
+        XCTAssertGreaterThan(epochTime, 1693000000) // Should be around 2023
         XCTAssertEqual(result.targetFormat, "Unix epoch")
     }
     
