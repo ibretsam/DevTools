@@ -122,6 +122,10 @@ final class PersistenceService {
         case "markdownPreview":
             return .markdownPreview
         default:
+            // For dynamic tool routes, try to parse the tool ID
+            if routeString != "home" && !routeString.isEmpty {
+                return .dynamicTool(routeString)
+            }
             return .home
         }
     }
@@ -138,6 +142,8 @@ final class PersistenceService {
             routeString = "jsonFormatter"
         case .markdownPreview:
             routeString = "markdownPreview"
+        case .dynamicTool(let toolId):
+            routeString = toolId
         }
         setPreference(routeString, forKey: PreferenceKey.selectedSidebarRoute)
     }

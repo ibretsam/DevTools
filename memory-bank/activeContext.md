@@ -1,45 +1,61 @@
 # Active Context - DevTools
 
 ## Current Focus
-**Phase 3: Testing & Polish ✅ COMPLETED**
+**NEW INITIATIVE: Simplified Tool Development Framework 🚀**
 
+Implementing a contributor-friendly architecture to make it incredibly easy for new developers to add tools to DevTools. The goal is "One File, One Tool, One Registration" - reducing the barrier to contribution from hours to minutes.
+
+**Previous Achievement: Phase 3 - Testing & Polish ✅ COMPLETED**
 Successfully completed comprehensive testing, performance optimization, and UI polish for the Date Converter. All 42 tests are passing, performance metrics are excellent, and the user experience is production-ready.
-
-**Next: Phase 4 - JSON Formatter Implementation**
-
-Ready to begin implementation of the JSON Formatter tool, building on the solid foundation established by the Date Converter.
 
 ## Immediate Priorities
 
-### 1. Architecture Foundation (Week 1) ✅ COMPLETED
-- ✅ Implement modern SwiftUI navigation system with Router pattern
-- ✅ Create dual navigation (Sidebar + Home page grid)
-- ✅ Set up Core Data for persistence
-- ✅ Establish testing infrastructure
+### 1. Simplified Tool Framework Implementation (Current Sprint) 🎯
+- [ ] **Phase 1**: Enhanced ToolProvider protocol with defaults
+- [ ] **Phase 2**: Single-file tool creation system
+- [ ] **Phase 3**: Simplified registration system with auto-route generation
+- [ ] **Phase 4**: Developer experience tools (templates, validation)
+- [ ] **Phase 5**: Optional testing framework
 
-### 2. Date Converter Implementation (Week 2-3) ✅ COMPLETED
-- ✅ Full-featured date conversion with 6 types
-- ✅ Comprehensive timezone support (90+ timezones)
-- ✅ Enhanced date format parsing (35+ formats)
-- ✅ Advanced UI with history and presets
-- ✅ Clipboard integration and drag & drop
-- ✅ Comprehensive testing (16 tests)
+### 2. Framework Goals
+- **3 steps max** to create a new tool
+- **Single file** for simple tools
+- **Clear templates** to copy from
+- **Automated validation** catches mistakes
+- **Optional testing** - easy to add when needed
 
-### 3. Testing & Polish (Week 4) ✅ COMPLETED
-- ✅ Performance optimization with caching
-- ✅ UI animations and visual feedback
-- ✅ Accessibility improvements
-- ✅ Comprehensive documentation
-- ✅ Build optimization and warning resolution
-- ✅ All 42 tests passing with excellent metrics
+## Framework Design Philosophy
 
-### 4. JSON Formatter Implementation (Week 5) 🎯 NEXT
-- [ ] JSON validation and parsing
-- [ ] Syntax highlighting and formatting
-- [ ] Minify/beautify functionality
-- [ ] Error highlighting and validation
-- [ ] Copy/paste and file operations
-- [ ] Comprehensive testing
+### "One File, One Tool, One Registration"
+```swift
+// Everything in one file!
+struct MyNewTool: ToolProvider {
+    static let metadata = ToolMetadata(
+        id: "my-new-tool",
+        name: "My New Tool",
+        description: "What this tool does",
+        icon: "star.fill",
+        category: .utilities
+    )
+    
+    static func createView() -> MyNewToolView {
+        MyNewToolView()
+    }
+}
+
+struct MyNewToolView: View {
+    var body: some View {
+        Text("Hello, New Tool!")
+        .navigationTitle(MyNewTool.metadata.name)
+    }
+}
+```
+
+### Contributor Workflow (Target)
+1. **Copy Template** (30 seconds): `cp Templates/NewToolTemplate.swift Tools/MyNewTool.swift`
+2. **Customize Tool** (5-30 minutes): Update metadata and implement functionality
+3. **Register Tool** (10 seconds): Add `MyNewTool.self,` to ToolRegistry
+4. **Test & Submit** ✅
 
 ## Recent Achievements
 
@@ -52,38 +68,67 @@ Ready to begin implementation of the JSON Formatter tool, building on the solid 
 - **Documentation**: Comprehensive inline documentation with performance notes
 - **Testing**: All 42 tests passing with excellent performance metrics (0.785s launch time)
 
-### Technical Excellence Achieved ✅
-- **Clean Architecture**: MVVM with service layer separation
-- **Type Safety**: Comprehensive enum-based navigation system
-- **Extensibility**: Protocol-based tool system for easy addition of new tools
-- **Performance**: Optimized rendering and cached operations
-- **User Experience**: Production-ready polish with native macOS integration
+### Home View Modernization ✅
+- **Modern Layout**: Implemented Layout constants structure for better maintainability
+- **Professional Design**: Enhanced visual hierarchy with adaptive grid system
+- **Code Organization**: Centralized layout constants in structured enums
+- **Contributor Ready**: Clean, well-organized codebase for new tool integration
 
 ## Development Patterns Established
 
-### Tool Implementation Pattern ✅
+### Current Tool Implementation Pattern ✅
 1. **Service Layer**: Core business logic with comprehensive error handling
 2. **ViewModel**: ObservableObject with published properties for UI binding
 3. **View Layer**: SwiftUI with accessibility and animations
 4. **Testing**: Unit tests for service layer, integration tests for UI
 5. **Documentation**: Inline documentation with performance notes
 
-### Architecture Patterns ✅
-- **Navigation**: Router-based with type-safe routes
-- **Data Persistence**: Core Data for history, UserDefaults for preferences
-- **Services**: Singleton pattern with dependency injection
-- **Error Handling**: Result types with user-friendly messages
-- **Clipboard Integration**: NSPasteboard wrapper with drag & drop
+### NEW: Simplified Tool Pattern (In Progress)
+1. **ToolProvider Protocol**: Single interface for all tool requirements
+2. **ToolMetadata**: Centralized tool configuration
+3. **Auto-Registration**: Minimal registration with auto-route generation
+4. **Template-Based**: Copy-and-modify workflow
+5. **Optional Extensions**: Easy to add ViewModels, Services, Tests
+
+## Architecture Evolution
+
+### Before (Complex)
+- Manual route enum updates
+- Switch statement modifications in navigation
+- Multiple file changes for one tool
+- Complex registration process
+
+### After (Simplified) 🎯
+- Auto-generated routes from metadata
+- Protocol-based tool discovery
+- Single-file tool creation
+- One-line registration
+
+## Success Metrics
+
+### Framework Success Criteria
+- [ ] **Time to First Tool**: < 10 minutes for new contributors
+- [ ] **Files to Modify**: Maximum 2 files (tool + registration)
+- [ ] **Learning Curve**: Understandable from template example alone
+- [ ] **Type Safety**: Compile-time validation maintained
+- [ ] **Backward Compatibility**: Existing tools continue working
+
+### Long-term Impact
+- **Increased Contributions**: Lower barrier to entry
+- **Consistent Quality**: Standardized patterns
+- **Faster Development**: Reduced boilerplate
+- **Better Maintenance**: Centralized tool management
 
 ## Next Steps
 
-### Phase 4: JSON Formatter
-Building on the established patterns, implement a comprehensive JSON tool with:
-- JSON validation and error reporting
-- Syntax highlighting for better readability
-- Minify/beautify formatting options
-- Copy/paste operations with clipboard integration
-- File import/export capabilities
-- Comprehensive testing following established patterns
+### Immediate (This Sprint)
+1. Implement ToolProvider protocol with enhanced capabilities
+2. Create ToolMetadata structure for centralized configuration
+3. Build auto-registration system with route generation
+4. Create comprehensive tool templates
+5. Add validation and testing utilities
 
-The Date Converter has successfully established all architectural patterns and development workflows needed for rapid implementation of future tools. 
+### Future Phases
+- **Community Onboarding**: Documentation and contribution guides
+- **Advanced Tools**: Support for complex multi-view tools
+- **Plugin System**: External tool loading capabilities 
