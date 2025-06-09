@@ -11,7 +11,10 @@ import SwiftUI
 struct DevToolsApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            RootNavigationView()
         }
+        .windowStyle(DefaultWindowStyle())
+        .windowResizability(.automatic)
+        .defaultSize(width: 800, height: 600)
     }
 }
