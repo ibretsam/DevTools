@@ -29,7 +29,7 @@ enum DateConversionType: String, CaseIterable, Identifiable {
         case .custom:
             return "Custom Format"
         case .epoch:
-            return "Epoch Time"
+            return "Unix epoch"
         case .timezone:
             return "Timezone"
         }
