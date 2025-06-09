@@ -33,7 +33,7 @@ final class DateConversionServiceTests: XCTestCase {
         XCTAssertTrue(result.success)
         XCTAssertFalse(result.result.isEmpty)
         XCTAssertNotNil(result.sourceDate)
-        XCTAssertEqual(result.targetFormat, "Full date and time")
+        XCTAssertEqual(result.targetFormat, "Timestamp")
     }
     
     func testConvertToTimestampWithInvalidInput() {

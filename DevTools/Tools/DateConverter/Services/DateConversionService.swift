@@ -98,7 +98,7 @@ final class DateConversionService {
         formatter.locale = Locale.current
         
         let result = formatter.string(from: date)
-        return .success(result, sourceDate: date, targetFormat: "Full date and time")
+        return .success(result, sourceDate: date, targetFormat: "Timestamp")
     }
     
     /// Convert input to ISO 8601 format
