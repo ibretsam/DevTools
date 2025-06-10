@@ -9,7 +9,7 @@ import Foundation
 
 /// Type-safe navigation routes for the DevTools app
 /// Enhanced to support auto-generation from tool IDs in the simplified framework
-enum Route: Hashable {
+enum Route: Hashable, Sendable {
     // Core navigation
     case home
     

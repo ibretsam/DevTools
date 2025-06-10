@@ -43,6 +43,13 @@ struct PlaceholderToolView: View {
 
 #Preview {
     NavigationStack {
-        PlaceholderToolView(tool: ToolRegistry.allTools[1])
+        PlaceholderToolView(tool: ToolDefinition(
+            id: "example-tool",
+            name: "Example Tool",
+            icon: "wrench.fill",
+            description: "This is an example tool for preview purposes",
+            category: .utilities,
+            route: .dynamicTool("example-tool")
+        ))
     }
 } 

@@ -9,7 +9,7 @@ import Foundation
 
 /// Centralized metadata structure for tool configuration
 /// Part of the simplified tool development framework
-struct ToolMetadata {
+struct ToolMetadata: Sendable {
     /// Unique identifier for the tool (used for route generation)
     let id: String
     

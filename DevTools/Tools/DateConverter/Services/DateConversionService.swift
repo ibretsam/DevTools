@@ -8,7 +8,7 @@
 import Foundation
 
 /// Result of a date conversion operation
-struct DateConversionResult {
+struct DateConversionResult: Sendable {
     let success: Bool
     let result: String
     let error: String?
@@ -37,7 +37,7 @@ struct DateConversionResult {
 /// - Timezone loading: < 1ms (cached)
 /// - Date parsing: Average 2-5ms per format attempt
 /// - Format validation: < 1ms
-final class DateConversionService {
+final class DateConversionService: Sendable {
     
     /// Shared instance
     static let shared = DateConversionService()

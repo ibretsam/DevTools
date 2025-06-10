@@ -10,6 +10,7 @@ import Combine
 
 /// Centralized navigation manager for the DevTools app
 /// Implements the Router pattern with SwiftUI NavigationStack
+@MainActor
 final class Router: ObservableObject {
     
     // MARK: - Published Properties
@@ -22,6 +23,28 @@ final class Router: ObservableObject {
     
     /// Currently selected detail route (for three-column layout)
     @Published var selectedDetailRoute: Route?
+    
+    /// Available tools for the sidebar (cached to avoid repeated async calls)
+    @Published var availableTools: [Route] = []
+    
+    // MARK: - Initialization
+    
+    init() {
+        Task {
+            await loadAvailableTools()
+        }
+    }
+    
+    /// Load available tools from the registry
+    private func loadAvailableTools() async {
+        let tools = await ToolRegistry.allTools
+        let routes = tools.map { $0.route }
+        
+        // Update on main actor
+        await MainActor.run {
+            self.availableTools = routes
+        }
+    }
     
     // MARK: - Navigation Methods
     
@@ -61,9 +84,11 @@ final class Router: ObservableObject {
     
     // MARK: - Route Management
     
-    /// Get all available tool routes (excluding home)
-    var availableTools: [Route] {
-        return ToolRegistry.allTools.map { $0.route }
+    /// Refresh available tools (useful after registering new tools)
+    func refreshAvailableTools() {
+        Task {
+            await loadAvailableTools()
+        }
     }
     
     /// Reset detail selection when sidebar changes

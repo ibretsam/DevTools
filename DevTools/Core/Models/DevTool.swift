@@ -9,7 +9,7 @@ import Foundation
 
 /// Protocol defining the common interface for all developer tools
 /// Maintained for backward compatibility with legacy tools
-protocol DevTool {
+protocol DevTool: Sendable {
     /// Unique identifier for the tool
     var id: String { get }
     
@@ -30,7 +30,7 @@ protocol DevTool {
 }
 
 /// Categories for organizing tools
-enum ToolCategory: String, CaseIterable {
+enum ToolCategory: String, CaseIterable, Sendable {
     case dateTime = "Date & Time"
     case textProcessing = "Text Processing"
     case formatting = "Formatting"
@@ -64,11 +64,11 @@ struct ToolDefinition: DevTool {
 }
 
 /// Enhanced registry supporting both legacy tools and new ToolProvider tools
-struct ToolRegistry {
+struct ToolRegistry: Sendable {
     
     // MARK: - Tool Storage
     
-    /// Legacy tools defined manually
+    /// Legacy tools defined manually (immutable, so concurrency-safe)
     private static let legacyTools: [DevTool] = [
         ToolDefinition(
             id: "date-converter",
@@ -96,74 +96,98 @@ struct ToolRegistry {
         )
     ]
     
-    /// New ToolProvider-based tools (simplified registration)
-    private static var toolProviders: [any ToolProvider.Type] = []
+    /// New ToolProvider-based tools (thread-safe with actor isolation)
+    private actor ToolStorage {
+        private var providers: [any ToolProvider.Type] = []
+        
+        func setProviders(_ providers: [any ToolProvider.Type]) {
+            self.providers = providers
+        }
+        
+        func addProvider(_ provider: any ToolProvider.Type) {
+            self.providers.append(provider)
+        }
+        
+        func getProviders() -> [any ToolProvider.Type] {
+            return providers
+        }
+    }
+    
+    private static let toolStorage = ToolStorage()
     
     // MARK: - Registration System
     
     /// Register new ToolProvider-based tools (simplified for contributors)
     /// Contributors only need to add their tool type to this array!
-    static func registerTools() {
-        toolProviders = [
+    static func registerTools() async {
+        await toolStorage.setProviders([
             // Add new ToolProvider tools here:
             Base64EncoderTool.self,
             // ExampleTool.self,
             // ColorPickerTool.self,
-        ]
+        ])
     }
     
     /// Register a single tool provider (for dynamic registration)
-    static func register<T: ToolProvider>(_ provider: T.Type) {
-        toolProviders.append(provider)
+    static func register<T: ToolProvider>(_ provider: T.Type) async {
+        await toolStorage.addProvider(provider)
     }
     
     // MARK: - Tool Access
     
     /// Get all available tools (legacy + new framework)
     static var allTools: [DevTool] {
-        var tools: [DevTool] = Array(legacyTools)
-        
-        // Add tools from ToolProviders
-        for provider in toolProviders {
-            tools.append(provider.asTool)
+        get async {
+            var tools: [DevTool] = Array(legacyTools)
+            
+            // Add tools from ToolProviders
+            let providers = await toolStorage.getProviders()
+            for provider in providers {
+                tools.append(provider.asTool)
+            }
+            
+            return tools
         }
-        
-        return tools
     }
     
     /// Get tools by category
-    static func tools(for category: ToolCategory) -> [DevTool] {
+    static func tools(for category: ToolCategory) async -> [DevTool] {
+        let allTools = await allTools
         return allTools.filter { $0.category == category }
     }
     
     /// Get tool by route
-    static func tool(for route: Route) -> DevTool? {
+    static func tool(for route: Route) async -> DevTool? {
+        let allTools = await allTools
         return allTools.first { $0.route == route }
     }
     
     /// Get tool by ID
-    static func tool(for id: String) -> DevTool? {
+    static func tool(for id: String) async -> DevTool? {
+        let allTools = await allTools
         return allTools.first { $0.id == id }
     }
     
     /// Get ToolProvider for a specific route (for view creation)
-    static func toolProvider(for route: Route) -> (any ToolProvider.Type)? {
+    static func toolProvider(for route: Route) async -> (any ToolProvider.Type)? {
         guard let toolId = route.toolId else { return nil }
-        return toolProviders.first { $0.metadata.id == toolId }
+        let providers = await toolStorage.getProviders()
+        return providers.first { $0.metadata.id == toolId }
     }
     
     // MARK: - Framework Utilities
     
     /// Initialize the tool registry (call this at app startup)
-    static func initialize() {
-        registerTools()
-        validateTools()
+    static func initialize() async {
+        await registerTools()
+        await validateTools()
     }
     
     /// Validate all registered tools (development/debug helper)
-    private static func validateTools() {
+    private static func validateTools() async {
         #if DEBUG
         var seenIds = Set<String>()
+        let allTools = await allTools
         
         for tool in allTools {
             // Check for duplicate IDs

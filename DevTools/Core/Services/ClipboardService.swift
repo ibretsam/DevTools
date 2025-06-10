@@ -9,7 +9,9 @@ import AppKit
 import Foundation
 
 /// Service for handling system clipboard operations
-final class ClipboardService {
+/// Thread-safe by being isolated to MainActor (required for NSPasteboard operations)
+@MainActor
+final class ClipboardService: Sendable {
     
     /// Shared instance
     static let shared = ClipboardService()
