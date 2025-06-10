@@ -9,9 +9,18 @@ import SwiftUI
 
 @main
 struct DevToolsApp: App {
+    @StateObject private var router = Router()
+    
     var body: some Scene {
         WindowGroup {
             RootNavigationView()
+                .environmentObject(router)
+                .task {
+                    // Initialize the tool registry at app startup
+                    await ToolRegistry.initialize()
+                    // Refresh router tools after registry initialization
+                    router.refreshAvailableTools()
+                }
         }
         .windowStyle(DefaultWindowStyle())
         .windowResizability(.automatic)

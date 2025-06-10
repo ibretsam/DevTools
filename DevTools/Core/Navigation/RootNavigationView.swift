@@ -10,7 +10,7 @@ import SwiftUI
 /// Root navigation view implementing the NavigationSplitView pattern for macOS
 /// Enhanced to support the simplified tool development framework
 struct RootNavigationView: View {
-    @StateObject private var router = Router()
+    @EnvironmentObject private var router: Router
     @State private var columnVisibility: NavigationSplitViewVisibility = .doubleColumn
     
     var body: some View {
@@ -19,12 +19,8 @@ struct RootNavigationView: View {
         } detail: {
             destinationView(for: router.selectedSidebarRoute)
         }
-        .environmentObject(router)
         .navigationSplitViewStyle(BalancedNavigationSplitViewStyle())
         .task {
-            // Initialize tool registry asynchronously
-            await ToolRegistry.initialize()
-            
             // Restore last selected route
             await MainActor.run {
                 let lastRoute = PersistenceService.shared.getLastSelectedRoute()
@@ -41,19 +37,13 @@ struct RootNavigationView: View {
         case .home:
             HomeView()
             
-        // Legacy tool routes (maintained for backward compatibility)
+        // Legacy tool routes (for tools NOT yet on the new framework)
         case .dateConverter:
             DateConverterView()
             
-        case .jsonFormatter:
-            AsyncToolView(route: .jsonFormatter, fallbackName: "JSON Formatter")
-            
-        case .markdownPreview:
-            AsyncToolView(route: .markdownPreview, fallbackName: "Markdown Preview")
-            
-        // Dynamic tool routes (new framework)
-        case .dynamicTool(let toolId):
-            AsyncToolView(route: route, fallbackName: toolId)
+        // All other tools (legacy and new) are handled dynamically
+        case .jsonFormatter, .markdownPreview, .dynamicTool:
+            AsyncToolView(route: route)
         }
     }
 }
@@ -61,50 +51,58 @@ struct RootNavigationView: View {
 /// Async tool view that handles async tool lookup
 private struct AsyncToolView: View {
     let route: Route
-    let fallbackName: String
     @State private var toolProvider: (any ToolProvider.Type)?
     @State private var tool: DevTool?
     @State private var isLoading = true
-    
+    @State private var fallbackName: String = "Tool"
+    @State private var toolView: AnyView?
+
     var body: some View {
         Group {
             if isLoading {
                 ProgressView("Loading \(fallbackName)...")
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-            } else if let toolProvider = toolProvider {
-                AnyView(toolProvider.createView())
+            } else if let toolView = toolView {
+                toolView
             } else if let tool = tool {
-                // Fallback to placeholder for tools without ToolProvider
+                // Fallback to placeholder for legacy tools without a specific view
                 PlaceholderToolView(tool: tool)
             } else {
                 ErrorView(message: "Tool '\(fallbackName)' not found")
             }
         }
-        .task {
+        .task(id: route) {
             await loadTool()
         }
     }
-    
+
+    @MainActor
     private func loadTool() async {
-        // Try to get ToolProvider first
-        let provider = await ToolRegistry.toolProvider(for: route)
+        isLoading = true
         
-        // If no provider, try to get tool for fallback
-        let toolFallback: DevTool?
-        if provider == nil {
-            if case .dynamicTool(let toolId) = route {
-                toolFallback = await ToolRegistry.tool(for: toolId)
-            } else {
-                toolFallback = await ToolRegistry.tool(for: route)
-            }
+        // Set a default name first
+        let initialName = await ToolRegistry.tool(for: route)?.name ?? "Tool"
+        fallbackName = initialName
+
+        // Try to get ToolProvider first for new framework tools
+        let provider = await ToolRegistry.toolProvider(for: route)
+
+        // If no provider, it might be a legacy tool.
+        let toolFallback = await ToolRegistry.tool(for: route)
+
+        // Create the view on the main actor if we have a provider
+        if let provider = provider {
+            toolView = AnyView(provider.createView())
         } else {
-            toolFallback = nil
+            toolView = nil
         }
         
-        await MainActor.run {
-            self.toolProvider = provider
-            self.tool = toolFallback
-            self.isLoading = false
+        self.toolProvider = provider
+        self.tool = toolFallback
+        self.isLoading = false
+        
+        if let finalName = toolFallback?.name {
+            self.fallbackName = finalName
         }
     }
 }

@@ -30,9 +30,8 @@ final class Router: ObservableObject {
     // MARK: - Initialization
     
     init() {
-        Task {
-            await loadAvailableTools()
-        }
+        // Don't load tools immediately - wait for registry initialization
+        // Tools will be loaded when the registry is initialized
     }
     
     /// Load available tools from the registry

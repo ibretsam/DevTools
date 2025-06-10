@@ -318,13 +318,13 @@ final class DateConverterViewModel: ObservableObject {
         request.fetchLimit = 50
         
         do {
-            let coreDataItems = try persistenceService.context.fetch(request)
+            let coreDataItems = try persistenceService.viewContext.fetch(request)
             historyItems = coreDataItems.compactMap { item in
                 guard let inputData = item.inputData,
                       let outputData = item.outputData,
                       let createdAt = item.createdAt,
-                      let settings = item.toolSettings as? [String: Any],
-                      let typeRawValue = settings["conversionType"] as? String,
+                      let settings = item.toolSettings,
+                      let typeRawValue = (settings as? [String: Any])?["conversionType"] as? String,
                       let conversionType = DateConversionType(rawValue: typeRawValue) else {
                     return nil
                 }
@@ -348,12 +348,11 @@ final class DateConverterViewModel: ObservableObject {
     }
     
     private func saveHistoryToCoreData(_ item: ConversionHistoryItem) {
-        let historyItem = HistoryItem(context: persistenceService.context)
-        historyItem.id = UUID()
+        let historyItem = HistoryItem(context: persistenceService.viewContext)
         historyItem.toolID = "DateConverter"
+        historyItem.createdAt = item.timestamp
         historyItem.inputData = item.inputText
         historyItem.outputData = item.outputText
-        historyItem.createdAt = item.timestamp
         
         var settings: [String: Any] = [
             "conversionType": item.conversionType.rawValue
@@ -369,23 +368,20 @@ final class DateConverterViewModel: ObservableObject {
         
         historyItem.toolSettings = settings
         
-        do {
-            try persistenceService.save()
-        } catch {
-            print("Failed to save history to Core Data: \(error)")
-        }
+        persistenceService.save()
     }
     
     private func clearHistoryFromCoreData() {
-        let request: NSFetchRequest<NSFetchRequestResult> = HistoryItem.fetchRequest()
-        request.predicate = NSPredicate(format: "toolID == %@", "DateConverter")
-        let deleteRequest = NSBatchDeleteRequest(fetchRequest: request)
+        let fetchRequest: NSFetchRequest<NSFetchRequestResult> = HistoryItem.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "toolID == %@", "DateConverter")
+        let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
         
         do {
-            try persistenceService.context.execute(deleteRequest)
-            try persistenceService.save()
+            try persistenceService.viewContext.execute(deleteRequest)
+            persistenceService.save()
+            historyItems.removeAll()
         } catch {
-            print("Failed to clear history from Core Data: \(error)")
+            print("Failed to clear history: \(error)")
         }
     }
     

@@ -85,14 +85,6 @@ struct ToolRegistry: Sendable {
             description: "Format, minify, and validate JSON data",
             category: .formatting,
             route: .jsonFormatter
-        ),
-        ToolDefinition(
-            id: "markdown-preview",
-            name: "Markdown Preview",
-            icon: "doc.text",
-            description: "Preview markdown content with live rendering",
-            category: .textProcessing,
-            route: .markdownPreview
         )
     ]
     
@@ -123,6 +115,7 @@ struct ToolRegistry: Sendable {
         await toolStorage.setProviders([
             // Add new ToolProvider tools here:
             Base64EncoderTool.self,
+            MarkdownPreviewTool.self,
             // ExampleTool.self,
             // ColorPickerTool.self,
         ])

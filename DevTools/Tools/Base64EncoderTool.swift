@@ -26,6 +26,7 @@ struct Base64EncoderTool: ToolProvider {
     
     // MARK: - View Creation
     
+    @MainActor
     static func createView() -> Base64EncoderView {
         Base64EncoderView()
     }
