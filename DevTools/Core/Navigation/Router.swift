@@ -2,7 +2,7 @@
 //  Router.swift
 //  DevTools
 //
-//  Created by DevTools on 9/6/25.
+//  Created by Khanh Le on 9/6/25.
 //
 
 import SwiftUI
@@ -63,7 +63,7 @@ final class Router: ObservableObject {
     
     /// Get all available tool routes (excluding home)
     var availableTools: [Route] {
-        return [.dateConverter, .jsonFormatter, .markdownPreview]
+        return ToolRegistry.allTools.map { $0.route }
     }
     
     /// Reset detail selection when sidebar changes

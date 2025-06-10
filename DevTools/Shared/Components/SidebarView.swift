@@ -2,7 +2,7 @@
 //  SidebarView.swift
 //  DevTools
 //
-//  Created by DevTools on 9/6/25.
+//  Created by Khanh Le on 9/6/25.
 //
 
 import SwiftUI
