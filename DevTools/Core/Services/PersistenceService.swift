@@ -9,7 +9,9 @@ import Foundation
 import CoreData
 
 /// Service for handling data persistence across the app
-final class PersistenceService {
+/// Thread-safe by being isolated to MainActor (Core Data operations should run on main thread)
+@MainActor
+final class PersistenceService: Sendable {
     
     /// Shared instance
     static let shared = PersistenceService()

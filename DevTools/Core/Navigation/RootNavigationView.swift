@@ -21,13 +21,15 @@ struct RootNavigationView: View {
         }
         .environmentObject(router)
         .navigationSplitViewStyle(BalancedNavigationSplitViewStyle())
-        .onAppear {
-            // Initialize tool registry
-            ToolRegistry.initialize()
+        .task {
+            // Initialize tool registry asynchronously
+            await ToolRegistry.initialize()
             
             // Restore last selected route
-            let lastRoute = PersistenceService.shared.getLastSelectedRoute()
-            router.selectedSidebarRoute = lastRoute
+            await MainActor.run {
+                let lastRoute = PersistenceService.shared.getLastSelectedRoute()
+                router.selectedSidebarRoute = lastRoute
+            }
         }
     }
     
@@ -44,29 +46,65 @@ struct RootNavigationView: View {
             DateConverterView()
             
         case .jsonFormatter:
-            if let tool = ToolRegistry.tool(for: .jsonFormatter) {
-                PlaceholderToolView(tool: tool)
-            } else {
-                ErrorView(message: "JSON Formatter not found")
-            }
+            AsyncToolView(route: .jsonFormatter, fallbackName: "JSON Formatter")
             
         case .markdownPreview:
-            if let tool = ToolRegistry.tool(for: .markdownPreview) {
-                PlaceholderToolView(tool: tool)
-            } else {
-                ErrorView(message: "Markdown Preview not found")
-            }
+            AsyncToolView(route: .markdownPreview, fallbackName: "Markdown Preview")
             
         // Dynamic tool routes (new framework)
         case .dynamicTool(let toolId):
-            if let toolProvider = ToolRegistry.toolProvider(for: route) {
+            AsyncToolView(route: route, fallbackName: toolId)
+        }
+    }
+}
+
+/// Async tool view that handles async tool lookup
+private struct AsyncToolView: View {
+    let route: Route
+    let fallbackName: String
+    @State private var toolProvider: (any ToolProvider.Type)?
+    @State private var tool: DevTool?
+    @State private var isLoading = true
+    
+    var body: some View {
+        Group {
+            if isLoading {
+                ProgressView("Loading \(fallbackName)...")
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else if let toolProvider = toolProvider {
                 AnyView(toolProvider.createView())
-            } else if let tool = ToolRegistry.tool(for: toolId) {
+            } else if let tool = tool {
                 // Fallback to placeholder for tools without ToolProvider
                 PlaceholderToolView(tool: tool)
             } else {
-                ErrorView(message: "Tool '\(toolId)' not found")
+                ErrorView(message: "Tool '\(fallbackName)' not found")
             }
+        }
+        .task {
+            await loadTool()
+        }
+    }
+    
+    private func loadTool() async {
+        // Try to get ToolProvider first
+        let provider = await ToolRegistry.toolProvider(for: route)
+        
+        // If no provider, try to get tool for fallback
+        let toolFallback: DevTool?
+        if provider == nil {
+            if case .dynamicTool(let toolId) = route {
+                toolFallback = await ToolRegistry.tool(for: toolId)
+            } else {
+                toolFallback = await ToolRegistry.tool(for: route)
+            }
+        } else {
+            toolFallback = nil
+        }
+        
+        await MainActor.run {
+            self.toolProvider = provider
+            self.tool = toolFallback
+            self.isLoading = false
         }
     }
 }

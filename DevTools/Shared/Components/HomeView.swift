@@ -10,6 +10,8 @@ import SwiftUI
 /// Home page view displaying all available tools in a modern, adaptive grid layout
 struct HomeView: View {
     @EnvironmentObject private var router: Router
+    @State private var toolsByCategory: [ToolCategory: [DevTool]] = [:]
+    @State private var isLoading = true
     
     // MARK: - Layout Constants
     private enum Layout {
@@ -31,28 +33,29 @@ struct HomeView: View {
         static let totalHorizontalPadding: CGFloat = 64 // For adaptive columns calculation
     }
     
-    // Group tools by category for better organization
-    private var toolsByCategory: [ToolCategory: [DevTool]] {
-        Dictionary(grouping: ToolRegistry.allTools) { $0.category }
-    }
-    
     var body: some View {
         GeometryReader { geometry in
             ScrollView {
-                VStack(alignment: .leading, spacing: Layout.mainSpacing) {
-                    
-                    // Tools grid by category
-                    ForEach(ToolCategory.allCases, id: \.self) { category in
-                        if let tools = toolsByCategory[category], !tools.isEmpty {
-                            categorySection(category: category, tools: tools, geometry: geometry)
+                if isLoading {
+                    ProgressView("Loading tools...")
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .padding(.top, 100)
+                } else {
+                    VStack(alignment: .leading, spacing: Layout.mainSpacing) {
+                        
+                        // Tools grid by category
+                        ForEach(ToolCategory.allCases, id: \.self) { category in
+                            if let tools = toolsByCategory[category], !tools.isEmpty {
+                                categorySection(category: category, tools: tools, geometry: geometry)
+                            }
                         }
+                        
+                        // Footer spacer
+                        Spacer(minLength: Layout.footerSpacing)
                     }
-                    
-                    // Footer spacer
-                    Spacer(minLength: Layout.footerSpacing)
+                    .padding(.horizontal, Layout.horizontalPadding)
+                    .padding(.vertical, Layout.verticalPadding)
                 }
-                .padding(.horizontal, Layout.horizontalPadding)
-                .padding(.vertical, Layout.verticalPadding)
             }
         }
         .navigationTitle("Home")
@@ -66,6 +69,20 @@ struct HomeView: View {
                 endPoint: .bottomTrailing
             )
         )
+        .task {
+            await loadTools()
+        }
+    }
+    
+    // MARK: - Data Loading
+    private func loadTools() async {
+        let allTools = await ToolRegistry.allTools
+        let grouped = Dictionary(grouping: allTools) { $0.category }
+        
+        await MainActor.run {
+            self.toolsByCategory = grouped
+            self.isLoading = false
+        }
     }
     
     // MARK: - Category Section
