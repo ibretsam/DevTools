@@ -28,6 +28,10 @@ final class DevToolsUITests: XCTestCase {
         let app = XCUIApplication()
         app.launch()
 
+        // Wait for the app to become stable
+        let exists = app.wait(for: .runningForeground, timeout: 10.0)
+        XCTAssertTrue(exists, "App should be running in foreground")
+
         // Use XCTAssert and related functions to verify your tests produce the correct results.
     }
 
@@ -35,7 +39,11 @@ final class DevToolsUITests: XCTestCase {
     func testLaunchPerformance() throws {
         // This measures how long it takes to launch your application.
         measure(metrics: [XCTApplicationLaunchMetric()]) {
-            XCUIApplication().launch()
+            let app = XCUIApplication()
+            app.launch()
+            
+            // Wait for the app to be ready before ending measurement
+            _ = app.wait(for: .runningForeground, timeout: 10.0)
         }
     }
 }

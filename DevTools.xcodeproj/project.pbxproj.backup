@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0B451CC82DFD613400D74435 /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = 0B451CC72DFD613400D74435 /* MarkdownUI */; };
+		0B451CCA2DFD614000D74435 /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = 0B451CC92DFD614000D74435 /* MarkdownUI */; };
 		0BB5656A2DF888D60054ADC4 /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = 0BB565692DF888D60054ADC4 /* MarkdownUI */; };
 /* End PBXBuildFile section */
 
@@ -64,6 +66,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0B451CC82DFD613400D74435 /* MarkdownUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -71,6 +74,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0B451CCA2DFD614000D74435 /* MarkdownUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -141,6 +145,7 @@
 			);
 			name = DevToolsTests;
 			packageProductDependencies = (
+				0B451CC72DFD613400D74435 /* MarkdownUI */,
 			);
 			productName = DevToolsTests;
 			productReference = 0B62BD682DF690370066AD7F /* DevToolsTests.xctest */;
@@ -164,6 +169,7 @@
 			);
 			name = DevToolsUITests;
 			packageProductDependencies = (
+				0B451CC92DFD614000D74435 /* MarkdownUI */,
 			);
 			productName = DevToolsUITests;
 			productReference = 0B62BD722DF690370066AD7F /* DevToolsUITests.xctest */;
@@ -312,7 +318,6 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 6736LJQ283;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -375,7 +380,6 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 6736LJQ283;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -405,7 +409,6 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = 6736LJQ283;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
@@ -448,7 +451,6 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = 6736LJQ283;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
@@ -488,7 +490,6 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = 6736LJQ283;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
@@ -512,7 +513,6 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = 6736LJQ283;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
@@ -535,7 +535,6 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = 6736LJQ283;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
@@ -558,7 +557,6 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = 6736LJQ283;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
@@ -629,6 +627,16 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		0B451CC72DFD613400D74435 /* MarkdownUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0BB565682DF888D60054ADC4 /* XCRemoteSwiftPackageReference "swift-markdown-ui" */;
+			productName = MarkdownUI;
+		};
+		0B451CC92DFD614000D74435 /* MarkdownUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0BB565682DF888D60054ADC4 /* XCRemoteSwiftPackageReference "swift-markdown-ui" */;
+			productName = MarkdownUI;
+		};
 		0BB565692DF888D60054ADC4 /* MarkdownUI */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 0BB565682DF888D60054ADC4 /* XCRemoteSwiftPackageReference "swift-markdown-ui" */;

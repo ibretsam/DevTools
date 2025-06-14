@@ -8,10 +8,12 @@
 import XCTest
 @testable import DevTools
 
+@MainActor
 final class RouterTests: XCTestCase {
     
     var router: Router!
     
+    @MainActor
     override func setUpWithError() throws {
         router = Router()
     }
@@ -22,12 +24,14 @@ final class RouterTests: XCTestCase {
     
     // MARK: - Navigation Tests
     
+    @MainActor
     func testInitialState() {
         XCTAssertEqual(router.selectedSidebarRoute, .home)
         XCTAssertNil(router.selectedDetailRoute)
         XCTAssertTrue(router.path.isEmpty)
     }
     
+    @MainActor
     func testNavigateToRoute() {
         // When
         router.navigate(to: .dateConverter)
@@ -37,6 +41,7 @@ final class RouterTests: XCTestCase {
         XCTAssertEqual(router.selectedDetailRoute, .dateConverter)
     }
     
+    @MainActor
     func testNavigateToRoot() {
         // Given
         router.navigate(to: .dateConverter)
@@ -51,6 +56,7 @@ final class RouterTests: XCTestCase {
         XCTAssertTrue(router.path.isEmpty)
     }
     
+    @MainActor
     func testCanNavigateBack() {
         // Initially false
         XCTAssertFalse(router.canNavigateBack())
@@ -64,11 +70,21 @@ final class RouterTests: XCTestCase {
         XCTAssertFalse(router.canNavigateBack())
     }
     
-    func testAvailableTools() {
-        let expectedTools: [Route] = [.dateConverter, .jsonFormatter, .markdownPreview]
-        XCTAssertEqual(router.availableTools, expectedTools)
+    @MainActor
+    func testAvailableTools() async {
+        // Initialize the registry and refresh tools
+        await ToolRegistry.initialize()
+        router.refreshAvailableTools()
+        
+        // Give it a moment to load
+        try? await Task.sleep(nanoseconds: 100_000_000) // 0.1 seconds
+        
+        // The available tools should match the expected set of tools based on their routes
+        let expectedTools: [Route] = await ToolRegistry.allTools.map { $0.route }
+        XCTAssertEqual(router.availableTools, expectedTools, "Available tools should match the expected set of tools")
     }
     
+    @MainActor
     func testClearDetailSelection() {
         // Given
         router.selectedDetailRoute = .dateConverter
@@ -80,6 +96,7 @@ final class RouterTests: XCTestCase {
         XCTAssertNil(router.selectedDetailRoute)
     }
     
+    @MainActor
     func testPopToView() {
         // Given
         router.path.append("item1")
@@ -93,6 +110,7 @@ final class RouterTests: XCTestCase {
         XCTAssertEqual(router.path.count, 1)
     }
     
+    @MainActor
     func testPopToViewWithExcessiveCount() {
         // Given
         router.path.append("item1")
