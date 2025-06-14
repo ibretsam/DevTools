@@ -22,6 +22,7 @@ protocol ToolProvider {
     
     /// Create the main view for this tool
     /// - Returns: The tool's main view
+    @MainActor
     static func createView() -> ContentView
     
     // MARK: - Optional Properties (Default implementations provided)

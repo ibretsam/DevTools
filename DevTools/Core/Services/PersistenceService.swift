@@ -41,7 +41,7 @@ final class PersistenceService: Sendable {
         return container
     }()
     
-    var context: NSManagedObjectContext {
+    var viewContext: NSManagedObjectContext {
         return persistentContainer.viewContext
     }
     
@@ -49,9 +49,9 @@ final class PersistenceService: Sendable {
     
     /// Save the managed object context
     func save() {
-        if context.hasChanges {
+        if viewContext.hasChanges {
             do {
-                try context.save()
+                try viewContext.save()
             } catch {
                 print("Save error: \(error)")
             }
@@ -64,7 +64,7 @@ final class PersistenceService: Sendable {
         request.predicate = predicate
         
         do {
-            return try context.fetch(request)
+            return try viewContext.fetch(request)
         } catch {
             print("Fetch error: \(error)")
             return []
@@ -73,8 +73,23 @@ final class PersistenceService: Sendable {
     
     /// Delete an object
     func delete(_ object: NSManagedObject) {
-        context.delete(object)
+        viewContext.delete(object)
         save()
+    }
+    
+    func deleteHistoryItems(with ids: [UUID]) {
+        let fetchRequest: NSFetchRequest<HistoryItem> = HistoryItem.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "id IN %@", ids)
+
+        do {
+            let itemsToDelete = try viewContext.fetch(fetchRequest)
+            for item in itemsToDelete {
+                viewContext.delete(item)
+            }
+            save()
+        } catch {
+            print("Failed to fetch or delete history items: \(error)")
+        }
     }
     
     // MARK: - UserDefaults Convenience

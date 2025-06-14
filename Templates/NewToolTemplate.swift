@@ -37,6 +37,7 @@ struct NewToolTemplate: ToolProvider {
     // MARK: - View Creation (REQUIRED)
     // This method creates your tool's main view
     
+    @MainActor
     static func createView() -> NewToolTemplateView {
         NewToolTemplateView()
     }

@@ -9,17 +9,20 @@ import XCTest
 import AppKit
 @testable import DevTools
 
+@MainActor
 final class ClipboardServiceTests: XCTestCase {
     
     var clipboardService: ClipboardService!
     private let originalPasteboardContents = NSPasteboard.general.string(forType: .string)
     
+    @MainActor
     override func setUpWithError() throws {
         clipboardService = ClipboardService.shared
         // Clear clipboard before each test
         clipboardService.clear()
     }
     
+    @MainActor
     override func tearDownWithError() throws {
         // Restore original clipboard contents if any
         if let originalContents = originalPasteboardContents {
@@ -32,6 +35,7 @@ final class ClipboardServiceTests: XCTestCase {
     
     // MARK: - Copy Tests
     
+    @MainActor
     func testCopyString() {
         let testString = "Hello, DevTools!"
         
@@ -43,6 +47,7 @@ final class ClipboardServiceTests: XCTestCase {
         XCTAssertEqual(clipboardService.getString(), testString)
     }
     
+    @MainActor
     func testCopyURL() {
         let testURL = URL(string: "https://example.com")!
         
@@ -54,6 +59,7 @@ final class ClipboardServiceTests: XCTestCase {
         XCTAssertEqual(clipboardService.getURL(), testURL)
     }
     
+    @MainActor
     func testCopyMultipleItems() {
         let items: [NSPasteboard.PasteboardType: String] = [
             .string: "Test String",
@@ -70,6 +76,7 @@ final class ClipboardServiceTests: XCTestCase {
     
     // MARK: - Read Tests
     
+    @MainActor
     func testGetStringWhenEmpty() {
         // Given empty clipboard
         clipboardService.clear()
@@ -81,6 +88,7 @@ final class ClipboardServiceTests: XCTestCase {
         XCTAssertNil(result)
     }
     
+    @MainActor
     func testGetURLWithValidString() {
         // Given
         clipboardService.copy("https://example.com")
@@ -92,6 +100,7 @@ final class ClipboardServiceTests: XCTestCase {
         XCTAssertEqual(result, URL(string: "https://example.com"))
     }
     
+    @MainActor
     func testGetURLWithInvalidString() {
         // Given
         clipboardService.copy("not a url")
@@ -105,6 +114,7 @@ final class ClipboardServiceTests: XCTestCase {
     
     // MARK: - Utility Tests
     
+    @MainActor
     func testHasContent() {
         // Initially empty
         clipboardService.clear()
@@ -115,6 +125,7 @@ final class ClipboardServiceTests: XCTestCase {
         XCTAssertTrue(clipboardService.hasContent())
     }
     
+    @MainActor
     func testContainsType() {
         // Given
         clipboardService.copy("test string")
@@ -124,6 +135,7 @@ final class ClipboardServiceTests: XCTestCase {
         XCTAssertFalse(clipboardService.contains(type: .fileURL))
     }
     
+    @MainActor
     func testAvailableTypes() {
         // Given
         clipboardService.copy("test")
@@ -135,6 +147,7 @@ final class ClipboardServiceTests: XCTestCase {
         XCTAssertTrue(types.contains(.string))
     }
     
+    @MainActor
     func testClear() {
         // Given
         clipboardService.copy("test")
