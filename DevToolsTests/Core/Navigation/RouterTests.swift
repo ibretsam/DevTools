@@ -79,8 +79,9 @@ final class RouterTests: XCTestCase {
         // Give it a moment to load
         try? await Task.sleep(nanoseconds: 100_000_000) // 0.1 seconds
         
-        // The available tools should include the registered tools based on their routes
-        XCTAssertTrue(router.availableTools.count > 0, "Available tools should not be empty")
+        // The available tools should match the expected set of tools based on their routes
+        let expectedTools: [Tool] = ToolRegistry.registeredTools.map { $0.route }
+        XCTAssertEqual(router.availableTools, expectedTools, "Available tools should match the expected set of tools")
     }
     
     @MainActor
