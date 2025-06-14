@@ -80,7 +80,7 @@ final class RouterTests: XCTestCase {
         try? await Task.sleep(nanoseconds: 100_000_000) // 0.1 seconds
         
         // The available tools should match the expected set of tools based on their routes
-        let expectedTools: [Tool] = ToolRegistry.registeredTools.map { $0.route }
+        let expectedTools: [Route] = await ToolRegistry.allTools.map { $0.route }
         XCTAssertEqual(router.availableTools, expectedTools, "Available tools should match the expected set of tools")
     }
     
