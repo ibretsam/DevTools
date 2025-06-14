@@ -532,6 +532,23 @@ struct SynchronizedScrollView<Content: View>: NSViewRepresentable {
 class ScrollCapturingScrollView: NSScrollView {
     var scrollHandler: ((NSScrollView) -> Void)?
     
+    override init(frame frameRect: NSRect) {
+        super.init(frame: frameRect)
+        configureScrollView()
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        configureScrollView()
+    }
+    
+    private func configureScrollView() {
+        hasVerticalScroller = true
+        hasHorizontalScroller = false
+        autohidesScrollers = false
+        scrollerStyle = .overlay
+    }
+    
     override func scrollWheel(with event: NSEvent) {
         // Always handle scroll events at this level, regardless of what's underneath
         super.scrollWheel(with: event)
