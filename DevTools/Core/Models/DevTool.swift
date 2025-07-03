@@ -109,6 +109,7 @@ struct ToolRegistry: Sendable {
             Base64EncoderTool.self,
             MarkdownPreviewTool.self,
             JSONFormatterTool.self,
+            QRCodeTool.self,
             // ExampleTool.self,
             // ColorPickerTool.self,
         ])
