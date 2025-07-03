@@ -10,6 +10,8 @@ jobs:
     runs-on: macos-14
     steps:
       - uses: actions/checkout@v4
+      - name: Install xcpretty
+        run: gem install xcpretty
       - name: Run unit tests
         run: xcodebuild -project DevTools.xcodeproj -scheme DevTools -destination 'platform=macOS' test | xcpretty
         env:
