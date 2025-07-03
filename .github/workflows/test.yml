@@ -19,6 +19,13 @@ jobs:
       - name: Run unit tests
         run: |
           set -o pipefail
-          xcodebuild -project DevTools.xcodeproj -scheme DevTools -destination 'platform=macOS' test | xcpretty
+          xcodebuild \
+            -project DevTools.xcodeproj \
+            -scheme DevTools \
+            -destination 'platform=macOS' \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            test | xcpretty
         env:
           NSUnbufferedIO: YES
