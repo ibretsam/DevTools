@@ -78,14 +78,6 @@ struct ToolRegistry: Sendable {
             category: .dateTime,
             route: .dateConverter
         ),
-        ToolDefinition(
-            id: "json-formatter",
-            name: "JSON Formatter",
-            icon: "curlybraces",
-            description: "Format, minify, and validate JSON data",
-            category: .formatting,
-            route: .jsonFormatter
-        )
     ]
     
     /// New ToolProvider-based tools (thread-safe with actor isolation)
@@ -116,6 +108,7 @@ struct ToolRegistry: Sendable {
             // Add new ToolProvider tools here:
             Base64EncoderTool.self,
             MarkdownPreviewTool.self,
+            JSONFormatterTool.self,
             // ExampleTool.self,
             // ColorPickerTool.self,
         ])
