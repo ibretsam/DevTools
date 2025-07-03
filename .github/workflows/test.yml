@@ -22,5 +22,3 @@ jobs:
           xcodebuild -project DevTools.xcodeproj -scheme DevTools -destination 'platform=macOS' test | xcpretty
         env:
           NSUnbufferedIO: YES
-
-
