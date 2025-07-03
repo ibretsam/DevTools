@@ -1,0 +1,26 @@
+name: macOS Tests
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode 16
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: "16.x"
+      - name: Install xcpretty
+        run: gem install xcpretty --no-document
+      - name: Run unit tests
+        run: |
+          set -o pipefail
+          xcodebuild -project DevTools.xcodeproj -scheme DevTools -destination 'platform=macOS' test | xcpretty
+        env:
+          NSUnbufferedIO: YES
+
+
