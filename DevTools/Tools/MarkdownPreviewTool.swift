@@ -218,6 +218,8 @@ struct MarkdownPreviewView: View {
                                     .clipShape(RoundedRectangle(cornerRadius: 8))
                             }
                             .allowsHitTesting(false) // Disable hit testing to prevent scroll capture
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .topLeading)
@@ -279,8 +281,9 @@ struct ScrollDetectingTextEditor: NSViewRepresentable {
         scrollView.hasHorizontalScroller = false
         scrollView.autohidesScrollers = false
         scrollView.scrollerStyle = .overlay
+        scrollView.horizontalScrollElasticity = .none
 
-        let textView = NSTextView(frame: NSRect(x: 0, y: 0, width: 400, height: 400))
+        let textView = NSTextView()
         textView.font = NSFont.monospacedSystemFont(ofSize: 14, weight: .regular)
         textView.isEditable = true
         textView.isSelectable = true
@@ -291,17 +294,38 @@ struct ScrollDetectingTextEditor: NSViewRepresentable {
         textView.string = text
         textView.delegate = context.coordinator
         textView.drawsBackground = true
-        textView.autoresizingMask = [.width, .height]
-        textView.translatesAutoresizingMaskIntoConstraints = true
-
-        // Set up text container
+        
+        // Critical: Disable horizontal resizing and set proper constraints
+        textView.isHorizontallyResizable = false
+        textView.isVerticallyResizable = true
+        textView.autoresizingMask = [.width]
+        textView.maxSize = NSSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude)
+        textView.minSize = NSSize(width: 0, height: 0)
+        
+        // Set up text container for forced text wrapping
         if let textContainer = textView.textContainer {
-            textContainer.containerSize = NSSize(width: 0, height: CGFloat.greatestFiniteMagnitude)
             textContainer.widthTracksTextView = true
+            textContainer.heightTracksTextView = false
+            textContainer.lineFragmentPadding = 0
+            textContainer.containerSize = NSSize(width: 0, height: CGFloat.greatestFiniteMagnitude)
+        }
+        
+        // Set up layout manager for proper wrapping
+        if let layoutManager = textView.layoutManager {
+            layoutManager.allowsNonContiguousLayout = false
         }
 
         scrollView.documentView = textView
         scrollView.contentView.postsBoundsChangedNotifications = true
+        
+        // Ensure the text view fills the scroll view width
+        textView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            textView.widthAnchor.constraint(equalTo: scrollView.contentView.widthAnchor),
+            textView.topAnchor.constraint(equalTo: scrollView.contentView.topAnchor),
+            textView.leadingAnchor.constraint(equalTo: scrollView.contentView.leadingAnchor),
+            textView.trailingAnchor.constraint(equalTo: scrollView.contentView.trailingAnchor)
+        ])
 
         // Set up scroll observation
         NotificationCenter.default.addObserver(
@@ -444,6 +468,7 @@ struct SynchronizedScrollView<Content: View>: NSViewRepresentable {
         customScrollView.hasHorizontalScroller = false
         customScrollView.autohidesScrollers = false
         customScrollView.scrollerStyle = .overlay
+        customScrollView.horizontalScrollElasticity = .none
         customScrollView.documentView = hostingView
         customScrollView.contentView.postsBoundsChangedNotifications = true
         customScrollView.scrollHandler = { scrollView in
@@ -547,6 +572,7 @@ class ScrollCapturingScrollView: NSScrollView {
         hasHorizontalScroller = false
         autohidesScrollers = false
         scrollerStyle = .overlay
+        horizontalScrollElasticity = .none
     }
     
     override func scrollWheel(with event: NSEvent) {
