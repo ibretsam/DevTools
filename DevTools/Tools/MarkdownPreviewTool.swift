@@ -23,7 +23,7 @@ struct MarkdownPreviewTool: ToolProvider {
     }
     
     @MainActor
-    static func createView() -> some View {
+    static func createView() -> MarkdownPreviewView {
         MarkdownPreviewView()
     }
 }
