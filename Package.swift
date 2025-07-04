@@ -18,7 +18,13 @@ let package = Package(
             name: "DevTools",
             dependencies: [
                 .product(name: "MarkdownUI", package: "swift-markdown-ui")
-            ]
+            ],
+            path: "DevTools"
+        ),
+        .testTarget(
+            name: "DevToolsTests",
+            dependencies: ["DevTools"],
+            path: "DevToolsTests"
         )
     ]
 ) 
