@@ -390,7 +390,6 @@ enum QRErrorCorrectionLevel: String, CaseIterable {
 
     var label: String { rawValue }
 }
-
 // MARK: - NSImage PNG Write Helper
 private extension NSImage {
     func pngWrite(to url: URL) {
