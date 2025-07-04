@@ -92,41 +92,49 @@ struct QRCodeToolView: View {
 
     private var encodeView: some View {
         VStack(alignment: .leading, spacing: 16) {
-            TextField("Text to encode", text: $inputText, axis: .vertical)
-                .lineLimit(1...5)
-                .textFieldStyle(.roundedBorder)
+            HStack(alignment: .top, spacing: 20) {
+                VStack(alignment: .leading, spacing: 12) {
+                    TextEditor(text: $inputText)
+                        .font(.system(.body, design: .monospaced))
+                        .frame(minHeight: 120)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(Color.secondary.opacity(0.3))
+                        )
 
-            HStack(spacing: 16) {
-                ColorPicker("Foreground", selection: $foregroundColor)
-                ColorPicker("Background", selection: $backgroundColor)
-                Spacer()
-            }
-
-            ZStack {
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(Color.secondary.opacity(0.1))
-                    .frame(height: 220)
-
-                if let qrImage {
-                    Image(nsImage: qrImage)
-                        .resizable()
-                        .interpolation(.none)
-                        .scaledToFit()
-                        .frame(maxWidth: 200, maxHeight: 200)
-                } else {
-                    VStack(spacing: 8) {
-                        Image(systemName: "qrcode")
-                            .font(.largeTitle)
-                            .foregroundColor(.secondary)
-                        Text("QR Preview")
-                            .foregroundColor(.secondary)
+                    HStack(spacing: 16) {
+                        ColorPicker("Foreground", selection: $foregroundColor)
+                        ColorPicker("Background", selection: $backgroundColor)
+                        Spacer()
                     }
                 }
+
+                ZStack {
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color.secondary.opacity(0.1))
+                        .frame(width: 240, height: 240)
+
+                    if let qrImage {
+                        Image(nsImage: qrImage)
+                            .resizable()
+                            .interpolation(.none)
+                            .scaledToFit()
+                            .frame(width: 200, height: 200)
+                    } else {
+                        VStack(spacing: 8) {
+                            Image(systemName: "qrcode")
+                                .font(.largeTitle)
+                                .foregroundColor(.secondary)
+                            Text("QR Preview")
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                }
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color.secondary.opacity(0.2))
+                )
             }
-            .overlay(
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(Color.secondary.opacity(0.2))
-            )
 
             HStack {
                 Spacer()
