@@ -249,8 +249,8 @@ extension QRCodeTool {
 
         let colorFilter = CIFilter.falseColor()
         colorFilter.inputImage = outputImage
-        colorFilter.color0 = CIColor(color: foreground)
-        colorFilter.color1 = CIColor(color: background)
+        colorFilter.color0 = CIColor(color: foreground) ?? CIColor.black
+        colorFilter.color1 = CIColor(color: background) ?? CIColor.white
         guard let colored = colorFilter.outputImage else { return nil }
         outputImage = colored
 
