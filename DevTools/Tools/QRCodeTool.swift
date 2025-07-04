@@ -26,6 +26,7 @@ struct QRCodeTool: ToolProvider {
 }
 
 // MARK: - Main View
+@MainActor
 struct QRCodeToolView: View {
     private enum Mode: String, CaseIterable, Identifiable {
         case encode = "Encode"
@@ -184,6 +185,7 @@ struct QRCodeToolView: View {
     }
 
     // MARK: - Actions
+    @MainActor
     private func updateQRCode() {
         qrImage = QRCodeTool.generateQRCode(
             from: inputText,
@@ -192,6 +194,7 @@ struct QRCodeToolView: View {
         )
     }
 
+    @MainActor
     private func saveImage() {
         guard let qrImage else { return }
         let panel = NSSavePanel()
@@ -202,6 +205,7 @@ struct QRCodeToolView: View {
         }
     }
 
+    @MainActor
     private func copyImage() {
         guard let qrImage else { return }
         let pasteboard = NSPasteboard.general
@@ -214,7 +218,7 @@ struct QRCodeToolView: View {
             if provider.canLoadObject(ofClass: NSImage.self) {
                 _ = provider.loadObject(ofClass: NSImage.self) { object, _ in
                     if let img = object as? NSImage {
-                        DispatchQueue.main.async {
+                        Task { @MainActor in
                             droppedImage = img
                             decodeQRCodeImage(img)
                         }
@@ -226,6 +230,7 @@ struct QRCodeToolView: View {
         return false
     }
 
+    @MainActor
     private func decodeQRCodeImage(_ image: NSImage) {
         if let text = QRCodeTool.decode(image: image) {
             decodedText = text
