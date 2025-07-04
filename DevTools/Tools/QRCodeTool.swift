@@ -138,6 +138,11 @@ struct QRCodeToolView: View {
 
             HStack {
                 Spacer()
+                Button(action: clearEncode) {
+                    Label("Clear", systemImage: "xmark.circle")
+                }
+                .disabled(inputText.isEmpty && qrImage == nil)
+
                 Button(action: saveImage) {
                     Label("Save Image", systemImage: "square.and.arrow.down")
                 }
@@ -216,6 +221,11 @@ struct QRCodeToolView: View {
                 Button(action: { showImporter = true }) {
                     Label("Select Image", systemImage: "photo.on.rectangle")
                 }
+
+                Button(action: clearDecode) {
+                    Label("Clear", systemImage: "xmark.circle")
+                }
+                .disabled(droppedImage == nil && decodedText.isEmpty && decodeError == nil)
             }
         }
         .padding()
@@ -265,6 +275,12 @@ struct QRCodeToolView: View {
         pasteboard.writeObjects([qrImage])
     }
 
+    @MainActor
+    private func clearEncode() {
+        inputText = ""
+        qrImage = nil
+    }
+
     private func loadDroppedImage(from providers: [NSItemProvider]) -> Bool {
         for provider in providers {
             if provider.canLoadObject(ofClass: NSImage.self) {
@@ -291,6 +307,13 @@ struct QRCodeToolView: View {
             decodedText = ""
             decodeError = "No QR code found"
         }
+    }
+
+    @MainActor
+    private func clearDecode() {
+        droppedImage = nil
+        decodedText = ""
+        decodeError = nil
     }
 }
 
