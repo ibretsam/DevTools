@@ -216,12 +216,12 @@ struct QRCodeToolView: View {
     private func loadDroppedImage(from providers: [NSItemProvider]) -> Bool {
         for provider in providers {
             if provider.canLoadObject(ofClass: NSImage.self) {
-                _ = provider.loadObject(ofClass: NSImage.self) { object, _ in
-                    if let img = object as? NSImage {
-                        DispatchQueue.main.async {
-                            droppedImage = img
-                            decodeQRCodeImage(img)
-                        }
+                provider.loadDataRepresentation(forTypeIdentifier: UTType.image.identifier) { data, _ in
+                    guard let data,
+                          let image = NSImage(data: data) else { return }
+                    Task { @MainActor in
+                        droppedImage = image
+                        decodeQRCodeImage(image)
                     }
                 }
                 return true
