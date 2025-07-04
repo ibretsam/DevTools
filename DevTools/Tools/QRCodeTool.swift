@@ -1,6 +1,7 @@
 import SwiftUI
 import CoreImage
 import CoreImage.CIFilterBuiltins
+import AppKit
 
 struct QRCodeTool: ToolProvider {
     static let metadata = ToolMetadata(
@@ -102,7 +103,7 @@ struct QRCodeToolView: View {
             HStack {
                 Text("Error Level")
                 Picker("Error Level", selection: $correctionLevel) {
-                    ForEach(QRErrorCorrectionLevel.allCases, id: \ .self) { level in
+                    ForEach(QRErrorCorrectionLevel.allCases, id: \.self) { level in
                         Text(level.label).tag(level)
                     }
                 }

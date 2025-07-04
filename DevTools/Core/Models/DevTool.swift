@@ -36,6 +36,7 @@ enum ToolCategory: String, CaseIterable, Sendable {
     case formatting = "Formatting"
     case encoding = "Encoding"
     case utilities = "Utilities"
+    case images = "Images"
     
     var icon: String {
         switch self {
@@ -49,6 +50,8 @@ enum ToolCategory: String, CaseIterable, Sendable {
             return "lock.fill"
         case .utilities:
             return "wrench.fill"
+        case .images:
+            return "photo"
         }
     }
 }
