@@ -91,47 +91,69 @@ struct QRCodeToolView: View {
     }
 
     private var encodeView: some View {
-        VStack(spacing: 16) {
-            TextField("Text to encode", text: $inputText)
+        VStack(alignment: .leading, spacing: 16) {
+            TextField("Text to encode", text: $inputText, axis: .vertical)
+                .lineLimit(1...5)
                 .textFieldStyle(.roundedBorder)
 
-            HStack {
+            HStack(spacing: 16) {
                 ColorPicker("Foreground", selection: $foregroundColor)
                 ColorPicker("Background", selection: $backgroundColor)
+                Spacer()
             }
-            .padding(.vertical, 4)
 
-            if let qrImage {
-                Image(nsImage: qrImage)
-                    .interpolation(.none)
-                    .resizable()
-                    .frame(width: 200, height: 200)
-                    .background(
-                        RoundedRectangle(cornerRadius: 8)
-                            .stroke(Color.secondary.opacity(0.2))
-                    )
-            } else {
-                Rectangle()
+            ZStack {
+                RoundedRectangle(cornerRadius: 12)
                     .fill(Color.secondary.opacity(0.1))
-                    .frame(width: 200, height: 200)
-                    .overlay(Text("QR preview").foregroundColor(.secondary))
+                    .frame(height: 220)
+
+                if let qrImage {
+                    Image(nsImage: qrImage)
+                        .resizable()
+                        .interpolation(.none)
+                        .scaledToFit()
+                        .frame(maxWidth: 200, maxHeight: 200)
+                } else {
+                    VStack(spacing: 8) {
+                        Image(systemName: "qrcode")
+                            .font(.largeTitle)
+                            .foregroundColor(.secondary)
+                        Text("QR Preview")
+                            .foregroundColor(.secondary)
+                    }
+                }
             }
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(Color.secondary.opacity(0.2))
+            )
 
             HStack {
-                Button("Save Image") { saveImage() }
-                    .disabled(qrImage == nil)
-                Button("Copy") { copyImage() }
-                    .disabled(qrImage == nil)
+                Spacer()
+                Button(action: saveImage) {
+                    Label("Save Image", systemImage: "square.and.arrow.down")
+                }
+                .disabled(qrImage == nil)
+
+                Button(action: copyImage) {
+                    Label("Copy", systemImage: "doc.on.doc")
+                }
+                .disabled(qrImage == nil)
             }
         }
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color(nsColor: .textBackgroundColor))
+        )
     }
 
     private var decodeView: some View {
-        VStack(spacing: 16) {
+        VStack(alignment: .leading, spacing: 16) {
             ZStack {
-                Rectangle()
+                RoundedRectangle(cornerRadius: 12)
                     .fill(Color.secondary.opacity(0.1))
-                    .frame(height: 200)
+                    .frame(height: 220)
                     .overlay(
                         Group {
                             if let droppedImage {
@@ -139,8 +161,13 @@ struct QRCodeToolView: View {
                                     .resizable()
                                     .scaledToFit()
                             } else {
-                                Text("Drop or select image")
-                                    .foregroundColor(.secondary)
+                                VStack(spacing: 8) {
+                                    Image(systemName: "photo")
+                                        .font(.largeTitle)
+                                        .foregroundColor(.secondary)
+                                    Text("Drop or select image")
+                                        .foregroundColor(.secondary)
+                                }
                             }
                         }
                     )
@@ -149,11 +176,17 @@ struct QRCodeToolView: View {
                         loadDroppedImage(from: providers)
                     }
             }
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(Color.secondary.opacity(0.2))
+            )
 
             TextEditor(text: .constant(decodedText))
                 .font(.system(.body, design: .monospaced))
                 .frame(minHeight: 80)
                 .disabled(true)
+                .background(Color(nsColor: .textBackgroundColor))
+                .cornerRadius(8)
                 .overlay(
                     RoundedRectangle(cornerRadius: 8)
                         .stroke(Color.secondary.opacity(0.3), lineWidth: 1)
@@ -166,11 +199,22 @@ struct QRCodeToolView: View {
             }
 
             HStack {
-                Button("Copy Result") { ClipboardService.shared.copy(decodedText) }
-                    .disabled(decodedText.isEmpty)
-                Button("Select Image") { showImporter = true }
+                Spacer()
+                Button(action: { ClipboardService.shared.copy(decodedText) }) {
+                    Label("Copy Result", systemImage: "doc.on.doc")
+                }
+                .disabled(decodedText.isEmpty)
+
+                Button(action: { showImporter = true }) {
+                    Label("Select Image", systemImage: "photo.on.rectangle")
+                }
             }
         }
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color(nsColor: .textBackgroundColor))
+        )
         .fileImporter(isPresented: $showImporter, allowedContentTypes: [.image]) { result in
             switch result {
             case .success(let url):
