@@ -104,12 +104,26 @@ final class ClipboardServiceTests: XCTestCase {
     func testGetURLWithInvalidString() {
         // Given
         clipboardService.copy("not a url")
-        
+
         // When
         let result = clipboardService.getURL()
-        
+
         // Then
         XCTAssertNil(result)
+    }
+
+    @MainActor
+    func testGetImage() {
+        // Given
+        let image = NSImage(size: NSSize(width: 1, height: 1))
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.writeObjects([image])
+
+        // When
+        let result = clipboardService.getImage()
+
+        // Then
+        XCTAssertNotNil(result)
     }
     
     // MARK: - Utility Tests

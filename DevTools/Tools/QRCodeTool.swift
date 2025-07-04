@@ -173,7 +173,7 @@ struct QRCodeToolView: View {
                                     Image(systemName: "photo")
                                         .font(.largeTitle)
                                         .foregroundColor(.secondary)
-                                    Text("Drop or select image")
+                                    Text("Drop, select, or paste image")
                                         .foregroundColor(.secondary)
                                 }
                             }
@@ -212,6 +212,10 @@ struct QRCodeToolView: View {
                     Label("Copy Result", systemImage: "doc.on.doc")
                 }
                 .disabled(decodedText.isEmpty)
+
+                Button(action: pasteImage) {
+                    Label("Paste Image", systemImage: "doc.on.clipboard")
+                }
 
                 Button(action: { showImporter = true }) {
                     Label("Select Image", systemImage: "photo.on.rectangle")
@@ -263,6 +267,14 @@ struct QRCodeToolView: View {
         let pasteboard = NSPasteboard.general
         pasteboard.clearContents()
         pasteboard.writeObjects([qrImage])
+    }
+
+    @MainActor
+    private func pasteImage() {
+        if let image = ClipboardService.shared.getImage() {
+            droppedImage = image
+            decodeQRCodeImage(image)
+        }
     }
 
     private func loadDroppedImage(from providers: [NSItemProvider]) -> Bool {

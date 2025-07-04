@@ -38,6 +38,16 @@ final class ClipboardService: Sendable {
         }
         return url
     }
+
+    /// Get image from clipboard
+    /// - Returns: NSImage or nil if not available
+    func getImage() -> NSImage? {
+        let classes = [NSImage.self]
+        if let images = pasteboard.readObjects(forClasses: classes, options: nil) as? [NSImage] {
+            return images.first
+        }
+        return nil
+    }
     
     /// Get file URLs from clipboard (for drag & drop support)
     /// - Returns: Array of file URLs
