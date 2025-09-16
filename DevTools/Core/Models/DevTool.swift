@@ -92,8 +92,12 @@ struct ToolRegistry: Sendable {
             self.providers.append(provider)
         }
         
-        func getProviders() -> [any ToolProvider.Type] {
-            return providers
+        func getTools() -> [DevTool] {
+            return providers.map { $0.asTool }
+        }
+        
+        func getProvider(for toolId: String) -> (any ToolProvider.Type)? {
+            return providers.first { $0.metadata.id == toolId }
         }
     }
     
@@ -128,10 +132,8 @@ struct ToolRegistry: Sendable {
             var tools: [DevTool] = Array(legacyTools)
             
             // Add tools from ToolProviders
-            let providers = await toolStorage.getProviders()
-            for provider in providers {
-                tools.append(provider.asTool)
-            }
+            let providerTools = await toolStorage.getTools()
+            tools.append(contentsOf: providerTools)
             
             return tools
         }
@@ -158,8 +160,7 @@ struct ToolRegistry: Sendable {
     /// Get ToolProvider for a specific route (for view creation)
     static func toolProvider(for route: Route) async -> (any ToolProvider.Type)? {
         guard let toolId = route.toolId else { return nil }
-        let providers = await toolStorage.getProviders()
-        return providers.first { $0.metadata.id == toolId }
+        return await toolStorage.getProvider(for: toolId)
     }
     
     // MARK: - Framework Utilities

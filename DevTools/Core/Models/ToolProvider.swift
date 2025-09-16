@@ -10,7 +10,7 @@ import Foundation
 
 /// Protocol for creating tools in the simplified tool development framework
 /// Supports single-file tool creation with optional advanced features
-protocol ToolProvider {
+protocol ToolProvider: Sendable {
     
     // MARK: - Required Properties
     
@@ -122,7 +122,7 @@ struct ToolTestSuite {
 // MARK: - Adapter for Legacy Compatibility
 
 /// Adapter to bridge ToolProvider to existing DevTool protocol
-private struct ToolAdapter: DevTool {
+private struct ToolAdapter: DevTool, Sendable {
     private let provider: any ToolProvider.Type
     
     init(provider: any ToolProvider.Type) {
